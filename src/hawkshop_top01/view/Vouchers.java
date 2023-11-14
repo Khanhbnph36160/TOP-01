@@ -7,9 +7,14 @@ package hawkshop_top01.view;
 
 
 import hawkshop_top01.entity.voucher;
+import hawkshop_top01.repository.DBconnection;
 import hawkshop_top01.service.Voucher_service;
 import static java.awt.image.ImageObserver.WIDTH;
+import java.sql.*;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -21,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
 public class Vouchers extends javax.swing.JPanel {
  Voucher_service sr = new Voucher_service();
     int row = -1;
-    String stnFind="";
+    
     /**
      * Creates new form Vouchers
      */
@@ -45,25 +50,25 @@ public class Vouchers extends javax.swing.JPanel {
             });
         }
     }
-    private void FillTable1() {
-        DefaultTableModel model = (DefaultTableModel) tblbangvoucher.getModel();        
-        model.setRowCount(0);
-        for (voucher s : sr.timkiem(stnFind)) {
-            model.addRow(new Object[]{
-                s.getMa(),
-                s.getTen(),
-                s.getSoLuong(),
-                s.getGiaTri(),
-                s.getNgayBatDau(),
-                s.getNgayKetThuc(),
-                s.getTrangThai()
-            });
-        }
-    }
+//    private void FillTable1() {
+//        DefaultTableModel model = (DefaultTableModel) tblbangvoucher.getModel();        
+//        model.setRowCount(0);
+//        for (voucher s : sr.timkiem(stnFind)) {
+//            model.addRow(new Object[]{
+//                s.getMa(),
+//                s.getTen(),
+//                s.getSoLuong(),
+//                s.getGiaTri(),
+//                s.getNgayBatDau(),
+//                s.getNgayKetThuc(),
+//                s.getTrangThai()
+//            });
+//        }
+//    }
 
     private void showData() {
         row = tblbangvoucher.getSelectedRow();
-        voucher s = sr.getVoucherAll().get(row);
+//        voucher s = sr.getVoucherAll().get(row);
         if (row >= 0) {
             txtma.setText(tblbangvoucher.getValueAt(row, 0).toString());
             txtten.setText(tblbangvoucher.getValueAt(row, 1).toString());
@@ -71,23 +76,6 @@ public class Vouchers extends javax.swing.JPanel {
             txtgiatri.setText(tblbangvoucher.getValueAt(row, 3).toString());
             txtbatdau.setText(tblbangvoucher.getValueAt(row, 4).toString());
             txtketthuc.setText(tblbangvoucher.getValueAt(row, 5).toString());
-//            String dateString = tblbangvoucher.getValueAt(row, 4).toString();
-//            try {
-//                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-//                String dateFromTable = dateFormat.parse(dateString);
-//                datebatdau.setText(dateFromTable);
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//            String dateStrings = tblbangvoucher.getValueAt(row, 5).toString();
-//            try {
-//                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-//                Date dateFromTable = dateFormat.parse(dateStrings);
-//                dateketthuc.setDate(dateFromTable);
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//            datebatdau.setDate(tblbangvoucher.getValueAt(row, 4));
             txttrangthai.setText(tblbangvoucher.getValueAt(row, 6).toString());
         }
     }
@@ -152,10 +140,12 @@ public class Vouchers extends javax.swing.JPanel {
 
     public void UpdateVoucher() {
         row = tblbangvoucher.getSelectedRow();
+       int id =Integer.valueOf(tblbangvoucher.getValueAt(row, 0).toString());
         voucher s = Getmodel();
+        s.setMa(id);
         if (sr.UpdateVoucher(s) > 0) {
             JOptionPane.showMessageDialog(this, "Thành công");
-            clear();
+            FillTable(sr.getVoucherAll());
         } else {
             JOptionPane.showMessageDialog(this, "Không Thành công");
         }
@@ -163,39 +153,23 @@ public class Vouchers extends javax.swing.JPanel {
 
     public void delete() {
         row = tblbangvoucher.getSelectedRow();
-        String voucher = tblbangvoucher.getValueAt(row, 0).toString();
+        String id = tblbangvoucher.getValueAt(row, 0).toString();
         voucher s = Getmodel();
-        if (sr.deteleSach(voucher) > 0) {
+        if (sr.deteleUpdate(id) > 0) {
             JOptionPane.showMessageDialog(this, "Thành công");
-            clear();
         } else {
             JOptionPane.showMessageDialog(this, "Không Thành công");
         }
+    }   
+    public void setModel(voucher v){
+        txtma.setText(Integer.valueOf(v.getMa()).toString());
+        txtten.setText(v.getTen());
+        txtsoluong.setText(Integer.valueOf(v.getSoLuong()).toString());
+        txtgiatri.setText(v.getGiaTri());
+        txtbatdau.setText(v.getNgayBatDau());
+        txtketthuc.setText(v.getNgayKetThuc());
+        txttrangthai.setText(v.getTrangThai());
     }
-
-//    public void processInput(String inputString) {
-//    if (inputString != null && !inputString.isEmpty()) {
-//        try {
-//            int number = Integer.parseInt(inputString);
-//            // Continue processing with the number
-//            System.out.println("Successfully converted to number: " + number);
-//        } catch (NumberFormatException e) {
-//            // Handle the exception (e.g., display an error message)
-//            System.out.println("Error: Input is not a valid number");
-//            e.printStackTrace();
-//        }
-//    } else {
-//        // Handle the case when the string is null or empty
-//        System.out.println("Input string is null or empty.");
-//    }
-//}
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -410,6 +384,7 @@ public class Vouchers extends javax.swing.JPanel {
 
         btnxoa.setBackground(new java.awt.Color(255, 102, 0));
         btnxoa.setForeground(new java.awt.Color(242, 242, 242));
+        btnxoa.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hawkshop_top01/images/icons/delete-button.png"))); // NOI18N
         btnxoa.setText("Xóa");
         btnxoa.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -419,6 +394,7 @@ public class Vouchers extends javax.swing.JPanel {
 
         btnsua.setBackground(new java.awt.Color(255, 102, 0));
         btnsua.setForeground(new java.awt.Color(242, 242, 242));
+        btnsua.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hawkshop_top01/images/icons/sua.png"))); // NOI18N
         btnsua.setText("Sửa");
         btnsua.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -428,6 +404,7 @@ public class Vouchers extends javax.swing.JPanel {
 
         btnthem.setBackground(new java.awt.Color(255, 102, 0));
         btnthem.setForeground(new java.awt.Color(242, 242, 242));
+        btnthem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hawkshop_top01/images/icons/them.png"))); // NOI18N
         btnthem.setText("Thêm");
         btnthem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -501,6 +478,15 @@ public class Vouchers extends javax.swing.JPanel {
             }
         });
         jScrollPane1.setViewportView(tblbangvoucher);
+
+        txttimkiem.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txttimkiemKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txttimkiemKeyReleased(evt);
+            }
+        });
 
         btntimkiem.setBackground(new java.awt.Color(255, 102, 0));
         btntimkiem.setForeground(new java.awt.Color(242, 242, 242));
@@ -608,10 +594,8 @@ public class Vouchers extends javax.swing.JPanel {
     }//GEN-LAST:event_btnxoaActionPerformed
 
     private void btnsuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsuaActionPerformed
-        if (check()) {
-            UpdateVoucher();
-            FillTable(sr.getVoucherAll());
-        }
+        UpdateVoucher();
+        tblbangvoucher.setRowSelectionInterval(0, 0);
     }//GEN-LAST:event_btnsuaActionPerformed
 
     private void btnthemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnthemActionPerformed
@@ -630,7 +614,11 @@ public class Vouchers extends javax.swing.JPanel {
     }//GEN-LAST:event_tblbangvoucherMouseClicked
 
     private void btntimkiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btntimkiemActionPerformed
-            FillTable1();
+           voucher vFind = sr.findVoucherByID(txtten.getText());
+           if (vFind!=null) {
+               setModel(vFind);
+               FillTable(sr.getVoucherAll());
+        }
     }//GEN-LAST:event_btntimkiemActionPerformed
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
@@ -648,6 +636,32 @@ public class Vouchers extends javax.swing.JPanel {
     private void txtketthucActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtketthucActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtketthucActionPerformed
+
+    private void txttimkiemKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txttimkiemKeyPressed
+        
+    }//GEN-LAST:event_txttimkiemKeyPressed
+
+    private void txttimkiemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txttimkiemKeyReleased
+//         Connection cn = null;
+//          PreparedStatement ptm = null;
+//          String sql = null;
+//          ResultSet rs = null;
+//          ArrayList<voucher>  arr= new ArrayList<>();
+//          try {
+//              sql = "Select * from dbo.Voucher where ten_voucher like N'%" + txttimkiem.getText()+ "%'";
+//              
+//            cn = DBconnection.getConnection();
+//              System.out.println(sql);
+//            ptm = cn.prepareStatement(sql);
+//              while (rs.next()) {
+//                voucher nv = new voucher(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7));
+//                arr.add(nv);
+//            }
+//              cn.close();
+//              FillTable(sr.getVoucherAll());
+//        } catch (Exception e) {
+//        }
+    }//GEN-LAST:event_txttimkiemKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

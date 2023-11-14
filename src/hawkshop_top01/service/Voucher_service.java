@@ -56,13 +56,13 @@ public class Voucher_service {
             return 0;
         }
     }
-    public int deteleSach(String ma){
-        sql = "delete from voucher Where id = ?";
+    public int deteleUpdate(String id){
+        sql = "delete dbo.Voucher Where id = ?";
         try {
             cn = DBconnection.getConnection();
             ptm = cn.prepareStatement(sql);
             
-            ptm.setObject(1, ma);           
+            ptm.setObject(1, id);           
             return ptm.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,52 +70,40 @@ public class Voucher_service {
         }
     }
     public int UpdateVoucher(voucher s) {       
-        sql = "update voucher\n"
-                + "set soluong=?,giatri=?,ngay_bat_dau=?,ngay_ket_thuc=?,trangthai=?\n"
-                + "where ten_voucher=?";     
+//        sql = "update voucher\n"
+//                + "set ten_voucher=?,soluong=?,giatri=?,ngay_bat_dau=?,ngay_ket_thuc=?,trangthai=?\n"
+//                + "where id=?";
+        sql = "UPDATE dbo.Voucher SET ten_voucher=?,soluong=?,giatri=?,ngay_bat_dau=?,ngay_ket_thuc=?,trangthai=? WHERE [id] = ?";
         try {
             cn = DBconnection.getConnection();
             ptm = cn.prepareStatement(sql);
             
-            ptm.setString(1, s.getTen());
-            ptm.setInt(2, s.getSoLuong());
-            ptm.setString(3, s.getGiaTri());
-            ptm.setString(4, s.getNgayBatDau());
-            ptm.setString(5, s.getNgayKetThuc());
-            ptm.setString(6, s.getTrangThai());
+            ptm.setObject(7, s.getMa());
+            ptm.setObject(1, s.getTen());
+            ptm.setObject(2, s.getSoLuong());
+            ptm.setObject(3, s.getGiaTri());
+            ptm.setObject(4, s.getNgayBatDau());
+            ptm.setObject(5, s.getNgayKetThuc());
+            ptm.setObject(6, s.getTrangThai());
             return ptm.executeUpdate();
         } catch (Exception e) {
             System.out.println(e);
         }
         return 0;
     }  
-    public List<voucher> timkiem(String name) {
-        sql = "Select * from voucher where ten_voucher like '%"+name+"%' ";
-        try {
-
-            cn = DBconnection.getConnection();
-            ptm = cn.prepareStatement(sql);
-            rs = ptm.executeQuery();
-            List<voucher> ls = new ArrayList<>();
-            while (rs.next()) {
-                voucher voucher = new voucher();
-                voucher.setTen(rs.getString(1));
-                voucher.setSoLuong(rs.getInt(2));
-                voucher.setGiaTri(rs.getString(2));
-                voucher.setNgayBatDau(rs.getString(3));
-                voucher.setNgayKetThuc(rs.getString(4));
-                voucher.setTrangThai(rs.getString(5));
-                ls.add(voucher);
+    public voucher findVoucherByID(String ten){
+        List<voucher> list = new ArrayList<>();
+        for (voucher v : list) {
+            if (v.getTen().equalsIgnoreCase(ten)) {
+                return v;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally{
-            try {
-                rs.close();ptm.close();cn.close();
-            } catch (Exception e) {
-            }           
         }
         return null;
     }
+
+    public int deteleUpdate(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+   
+
 }

@@ -9,6 +9,10 @@ package hawkshop_top01.entity;
  * @author khuat
  */
 public class voucher {
+
+    public static void applyPattern(String ddmmyyyy) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     private int ma;
     private String ten;
     private int soLuong;
