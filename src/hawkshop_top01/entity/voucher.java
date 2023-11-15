@@ -34,6 +34,10 @@ public class voucher {
         this.trangThai = trangThai;
     }
 
+    public voucher(int WIDTH, String text, int parseInt, String text0, String text1, String bd, String kt, String batdau, String ketthuc) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     public int getMa() {
         return ma;
     }

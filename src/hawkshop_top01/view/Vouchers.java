@@ -4,36 +4,43 @@
  */
 package hawkshop_top01.view;
 
-
-
 import hawkshop_top01.entity.voucher;
+import hawkshop_top01.images.XImage;
 import hawkshop_top01.repository.DBconnection;
+
 import hawkshop_top01.service.Voucher_service;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import static java.awt.image.ImageObserver.WIDTH;
 import java.sql.*;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
-
 
 /**
  *
  * @author khuat
  */
 public class Vouchers extends javax.swing.JPanel {
- Voucher_service sr = new Voucher_service();
+
+    Voucher_service sr = new Voucher_service();
     int row = -1;
-    
+
     /**
      * Creates new form Vouchers
      */
     public Vouchers() {
         initComponents();
-         FillTable(sr.getVoucherAll());
+        FillTable(sr.getVoucherAll());
     }
+
     private void FillTable(List<voucher> lists) {
         DefaultTableModel model = new DefaultTableModel();
         model = (DefaultTableModel) tblbangvoucher.getModel();
@@ -68,26 +75,73 @@ public class Vouchers extends javax.swing.JPanel {
 
     private void showData() {
         row = tblbangvoucher.getSelectedRow();
-//        voucher s = sr.getVoucherAll().get(row);
         if (row >= 0) {
             txtma.setText(tblbangvoucher.getValueAt(row, 0).toString());
             txtten.setText(tblbangvoucher.getValueAt(row, 1).toString());
             txtsoluong.setText(tblbangvoucher.getValueAt(row, 2).toString());
             txtgiatri.setText(tblbangvoucher.getValueAt(row, 3).toString());
-            txtbatdau.setText(tblbangvoucher.getValueAt(row, 4).toString());
-            txtketthuc.setText(tblbangvoucher.getValueAt(row, 5).toString());
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                SimpleDateFormat sdfs = new SimpleDateFormat("dd/MM/yyyy");
+                Date ngay_bat_dau = sdf.parse(tblbangvoucher.getValueAt(row, 4).toString());
+//                String ns = sdfs.format(ngay_bat_dau);
+                datebatdau.setDate(ngay_bat_dau);
+                Date ngay_ket_thuc = sdf.parse(tblbangvoucher.getValueAt(row, 5).toString());
+                String nss = sdfs.format(ngay_ket_thuc);
+                dateketthuc.setDate(ngay_ket_thuc);
+            } catch (Exception e) {
+            }
             txttrangthai.setText(tblbangvoucher.getValueAt(row, 6).toString());
         }
     }
 
     voucher Getmodel() {
-        String ten = txtten.getText();
-        int soLuong = Integer.valueOf(txtsoluong.getText());
-        String giaTri = txtgiatri.getText();
-        String ngayBatDau = txtbatdau.getText();
-        String ngayKetThuc = txtketthuc.getText();
-        String trangThai = txttrangthai.getText();
-        return new voucher(WIDTH, ten, soLuong, giaTri, ngayBatDau, ngayKetThuc, trangThai);
+
+//        try {
+//            SimpleDateFormat sdfs = new SimpleDateFormat("dd/MM/yyyy");
+//            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+//            Date date = new Date();
+//            String batdau = sdf.format(date);
+//            Date ngay_bat_dau = sdfs.parse(datebatdau.getToolTipText());
+//            String bd = sdf.format(ngay_bat_dau);
+//            String ketthuc = sdf.format(date);
+//            Date ngay_ket_thuc = sdfs.parse(dateketthuc.getToolTipText());
+//            String kt = sdf.format(ngay_ket_thuc);
+//            voucher vo = new voucher(WIDTH, txtten.getText(), Integer.valueOf(txtsoluong.getText()), bd, kt, batdau, ketthuc);
+//            return vo;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+        try {
+            SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat outputDateFormat = new SimpleDateFormat("MM-dd-yyyy");
+
+            Date currentDate = new Date();
+            String text = datebatdau.getToolTipText();
+            String textt = dateketthuc.getToolTipText();
+            voucher v = new voucher();
+            // Assuming datebatdau.getToolTipText() and dateketthuc.getToolTipText() are not null
+            if (text != null) {
+                Date ngay_bat_dau = inputDateFormat.parse(text);
+                String bd = outputDateFormat.format(ngay_bat_dau);
+
+                Date ngay_ket_thuc = inputDateFormat.parse(textt);
+                String kt = outputDateFormat.format(ngay_ket_thuc);
+
+                String batdau = outputDateFormat.format(currentDate);
+                String ketthuc = outputDateFormat.format(currentDate);
+                String ten = v.getTen();
+                voucher vo = new voucher(WIDTH, txtten.getText(), Integer.parseInt(txtsoluong.getText()), txtgiatri.getText(), bd, kt, txttrangthai.getText(), batdau, ketthuc);
+                return vo;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle the exception appropriately, log it, or return an error response
+            return null;
+        }
 
     }
 
@@ -112,11 +166,11 @@ public class Vouchers extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Giá trị không được để trống!");
             return false;
         }
-        if (txtbatdau.getText().equalsIgnoreCase("")) {
+        if (datebatdau.getDate().equals("")) {
             JOptionPane.showMessageDialog(this, "Ngày bắt đầu không được để trống!");
             return false;
         }
-        if (txtketthuc.getText().equalsIgnoreCase("")) {
+        if (dateketthuc.getDate().equals("")) {
             JOptionPane.showMessageDialog(this, "Ngày Kết thúc không được để trống!");
             return false;
         }
@@ -127,24 +181,23 @@ public class Vouchers extends javax.swing.JPanel {
         return true;
     }
 
-    public void addVoucher() {
-        voucher s = Getmodel();
-
-        if (sr.AddVoucher(s) > 0) {
-            JOptionPane.showMessageDialog(this, "Thành công");
-            clear();
-        } else {
-            JOptionPane.showMessageDialog(this, "Không Thành công");
-        }
-    }
-
+//    public void addVoucher() {
+//        voucher s = Getmodel();
+//        if (sr.AddVoucher(s) > 0) {
+//            JOptionPane.showMessageDialog(this, "Thành công");
+//            clear();
+//        } else {
+//            JOptionPane.showMessageDialog(this, "Không Thành công");
+//        }
+//    }
     public void UpdateVoucher() {
         row = tblbangvoucher.getSelectedRow();
-       int id =Integer.valueOf(tblbangvoucher.getValueAt(row, 0).toString());
+        int id = Integer.valueOf(tblbangvoucher.getValueAt(row, 0).toString());
         voucher s = Getmodel();
         s.setMa(id);
         if (sr.UpdateVoucher(s) > 0) {
             JOptionPane.showMessageDialog(this, "Thành công");
+            clear();
             FillTable(sr.getVoucherAll());
         } else {
             JOptionPane.showMessageDialog(this, "Không Thành công");
@@ -160,16 +213,37 @@ public class Vouchers extends javax.swing.JPanel {
         } else {
             JOptionPane.showMessageDialog(this, "Không Thành công");
         }
-    }   
-    public void setModel(voucher v){
-        txtma.setText(Integer.valueOf(v.getMa()).toString());
-        txtten.setText(v.getTen());
-        txtsoluong.setText(Integer.valueOf(v.getSoLuong()).toString());
-        txtgiatri.setText(v.getGiaTri());
-        txtbatdau.setText(v.getNgayBatDau());
-        txtketthuc.setText(v.getNgayKetThuc());
-        txttrangthai.setText(v.getTrangThai());
     }
+
+    public void setModel(voucher v) {
+//        txtma.setText(Integer.valueOf(v.getMa()).toString());
+//        txtten.setText(v.getTen());
+//        txtsoluong.setText(Integer.valueOf(v.getSoLuong()).toString());
+//        txtgiatri.setText(v.getGiaTri());
+//        txtbatdau.setText(v.getNgayBatDau());
+//        txtketthuc.setText(v.getNgayKetThuc());
+//        txttrangthai.setText(v.getTrangThai());
+        try {
+            txtma.setText(Integer.valueOf(v.getMa()).toString());
+            txtten.setText(v.getTen());
+            txtsoluong.setText(Integer.valueOf(v.getSoLuong()).toString());
+            txtgiatri.setText(v.getGiaTri());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            SimpleDateFormat sdfs = new SimpleDateFormat("dd/MM/yyyy");
+
+            Date ngay_bat_dau = sdf.parse(v.getNgayBatDau());
+            String ns = sdfs.format(ngay_bat_dau);
+            datebatdau.setToolTipText(ns);
+            Date ngay_ket_thuc = sdf.parse(v.getNgayKetThuc());
+            String nss = sdfs.format(ngay_ket_thuc);
+            dateketthuc.setToolTipText(nss);
+            txttrangthai.setText(v.getTrangThai());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -192,12 +266,13 @@ public class Vouchers extends javax.swing.JPanel {
         jLabel8 = new javax.swing.JLabel();
         txttrangthai = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        txtbatdau = new javax.swing.JTextField();
-        txtketthuc = new javax.swing.JTextField();
+        dateketthuc = new com.toedter.calendar.JDateChooser();
+        datebatdau = new com.toedter.calendar.JDateChooser();
         btnxoa = new javax.swing.JButton();
         btnsua = new javax.swing.JButton();
         btnthem = new javax.swing.JButton();
         btnlammoi = new javax.swing.JButton();
+        lbldongho = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblbangvoucher = new javax.swing.JTable();
         txttimkiem = new javax.swing.JTextField();
@@ -329,19 +404,9 @@ public class Vouchers extends javax.swing.JPanel {
         jLabel10.setForeground(new java.awt.Color(0, 0, 255));
         jLabel10.setText("Thời Gian Sửa dụng");
 
-        txtbatdau.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
-        txtbatdau.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtbatdauActionPerformed(evt);
-            }
-        });
+        dateketthuc.setDateFormatString("yyyy-MM-dd");
 
-        txtketthuc.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
-        txtketthuc.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtketthucActionPerformed(evt);
-            }
-        });
+        datebatdau.setDateFormatString("yyyy-MM-dd");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -358,8 +423,8 @@ public class Vouchers extends javax.swing.JPanel {
                             .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel10))
                         .addGap(0, 228, Short.MAX_VALUE))
-                    .addComponent(txtbatdau, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(txtketthuc))
+                    .addComponent(dateketthuc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(datebatdau, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -369,12 +434,12 @@ public class Vouchers extends javax.swing.JPanel {
                 .addComponent(jLabel10)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel6)
-                .addGap(5, 5, 5)
-                .addComponent(txtbatdau, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(datebatdau, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel7)
-                .addGap(11, 11, 11)
-                .addComponent(txtketthuc, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                .addGap(12, 12, 12)
+                .addComponent(dateketthuc, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -382,8 +447,9 @@ public class Vouchers extends javax.swing.JPanel {
                 .addGap(12, 12, 12))
         );
 
-        btnxoa.setBackground(new java.awt.Color(255, 102, 0));
-        btnxoa.setForeground(new java.awt.Color(242, 242, 242));
+        btnxoa.setBackground(new java.awt.Color(255, 255, 0));
+        btnxoa.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnxoa.setForeground(new java.awt.Color(0, 102, 255));
         btnxoa.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hawkshop_top01/images/icons/delete-button.png"))); // NOI18N
         btnxoa.setText("Xóa");
         btnxoa.addActionListener(new java.awt.event.ActionListener() {
@@ -392,8 +458,9 @@ public class Vouchers extends javax.swing.JPanel {
             }
         });
 
-        btnsua.setBackground(new java.awt.Color(255, 102, 0));
-        btnsua.setForeground(new java.awt.Color(242, 242, 242));
+        btnsua.setBackground(new java.awt.Color(255, 255, 0));
+        btnsua.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnsua.setForeground(new java.awt.Color(0, 102, 255));
         btnsua.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hawkshop_top01/images/icons/sua.png"))); // NOI18N
         btnsua.setText("Sửa");
         btnsua.addActionListener(new java.awt.event.ActionListener() {
@@ -402,8 +469,9 @@ public class Vouchers extends javax.swing.JPanel {
             }
         });
 
-        btnthem.setBackground(new java.awt.Color(255, 102, 0));
-        btnthem.setForeground(new java.awt.Color(242, 242, 242));
+        btnthem.setBackground(new java.awt.Color(255, 255, 0));
+        btnthem.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnthem.setForeground(new java.awt.Color(0, 102, 255));
         btnthem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hawkshop_top01/images/icons/them.png"))); // NOI18N
         btnthem.setText("Thêm");
         btnthem.addActionListener(new java.awt.event.ActionListener() {
@@ -412,14 +480,19 @@ public class Vouchers extends javax.swing.JPanel {
             }
         });
 
-        btnlammoi.setBackground(new java.awt.Color(255, 102, 0));
-        btnlammoi.setForeground(new java.awt.Color(242, 242, 242));
+        btnlammoi.setBackground(new java.awt.Color(255, 255, 0));
+        btnlammoi.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnlammoi.setForeground(new java.awt.Color(51, 102, 255));
         btnlammoi.setText("Làm mới");
         btnlammoi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnlammoiActionPerformed(evt);
             }
         });
+
+        lbldongho.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lbldongho.setForeground(new java.awt.Color(0, 0, 204));
+        lbldongho.setText("00:00");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -429,7 +502,10 @@ public class Vouchers extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(54, 54, 54)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnthem, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -439,9 +515,11 @@ public class Vouchers extends javax.swing.JPanel {
                                     .addComponent(btnlammoi, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(btnsua, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnxoa, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnxoa, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(lbldongho)
+                                .addGap(25, 25, 25))))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -451,7 +529,9 @@ public class Vouchers extends javax.swing.JPanel {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnlammoi, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnlammoi, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbldongho))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnxoa, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -488,8 +568,9 @@ public class Vouchers extends javax.swing.JPanel {
             }
         });
 
-        btntimkiem.setBackground(new java.awt.Color(255, 102, 0));
-        btntimkiem.setForeground(new java.awt.Color(242, 242, 242));
+        btntimkiem.setBackground(new java.awt.Color(255, 255, 0));
+        btntimkiem.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btntimkiem.setForeground(new java.awt.Color(0, 51, 255));
         btntimkiem.setText("Search");
         btntimkiem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -564,7 +645,7 @@ public class Vouchers extends javax.swing.JPanel {
                         .addComponent(jRadioButton1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(122, Short.MAX_VALUE))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -594,14 +675,81 @@ public class Vouchers extends javax.swing.JPanel {
     }//GEN-LAST:event_btnxoaActionPerformed
 
     private void btnsuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsuaActionPerformed
-        UpdateVoucher();
-        tblbangvoucher.setRowSelectionInterval(0, 0);
+//        UpdateVoucher();
+//        tblbangvoucher.setRowSelectionInterval(0, 0);
+    try {
+            int id = Integer.valueOf(txtma.getText());
+            String ten = txtten.getText();
+            int soLuong = Integer.valueOf(txtsoluong.getText());
+            String giaTri = txtgiatri.getText();
+            String trangThai = txttrangthai.getText();
+            Connection cn = null;
+            PreparedStatement ptm = null;
+            String sql = null;
+         
+
+            sql = "UPDATE dbo.Voucher SET ten_voucher=?,soluong=?,giatri=?,ngay_bat_dau=?,ngay_ket_thuc=?,trangthai=? WHERE id = ?";
+            try {
+                cn = DBconnection.getConnection();
+                ptm = cn.prepareStatement(sql);
+
+                ptm.setObject(1, ten);
+                ptm.setObject(2, soLuong);
+                ptm.setObject(3, giaTri);
+                ptm.setObject(4,((JTextField)datebatdau.getDateEditor().getUiComponent()).getText());
+                ptm.setObject(5,((JTextField)dateketthuc.getDateEditor().getUiComponent()).getText());
+                ptm.setObject(6, trangThai);
+                ptm.setObject(7, id);
+                int chk = ptm.executeUpdate();
+                if (chk > 0) {
+                    JOptionPane.showMessageDialog(this, "Thêm Thành Công");
+                    FillTable(sr.getVoucherAll());
+                }else{
+                     JOptionPane.showMessageDialog(this, " Không Thành Công");
+                }
+                        
+            } catch (Exception e) {
+                e.printStackTrace();        
+            }
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_btnsuaActionPerformed
 
     private void btnthemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnthemActionPerformed
-        if (check()) {
-            addVoucher();
-            FillTable(sr.getVoucherAll());
+
+        try {
+            String ten = txtten.getText();
+            int soLuong = Integer.valueOf(txtsoluong.getText());
+            String giaTri = txtgiatri.getText();
+            String trangThai = txttrangthai.getText();
+            Connection cn = null;
+            PreparedStatement ptm = null;
+            String sql = null;
+         
+
+            sql = "INSERT INTO voucher(ten_voucher, soluong, giatri, ngay_bat_dau, ngay_ket_thuc,trangthai) VALUES(?,?,?,?,?,?)";
+            try {
+                cn = DBconnection.getConnection();
+                ptm = cn.prepareStatement(sql);
+
+                ptm.setString(1, ten);
+                ptm.setInt(2, soLuong);
+                ptm.setString(3, giaTri);
+                ptm.setString(4, ((JTextField)datebatdau.getDateEditor().getUiComponent()).getText());
+                ptm.setString(5, ((JTextField)dateketthuc.getDateEditor().getUiComponent()).getText());
+                ptm.setString(6, trangThai);
+                int chk = ptm.executeUpdate();
+                if (chk > 0) {
+                    JOptionPane.showMessageDialog(this, "Thêm Thành Công");
+                    FillTable(sr.getVoucherAll());
+                }else{
+                     JOptionPane.showMessageDialog(this, " Không Thành Công");
+                }
+                        
+            } catch (Exception e) {
+                e.printStackTrace();        
+            }
+        } catch (Exception e) {
         }
     }//GEN-LAST:event_btnthemActionPerformed
 
@@ -614,11 +762,14 @@ public class Vouchers extends javax.swing.JPanel {
     }//GEN-LAST:event_tblbangvoucherMouseClicked
 
     private void btntimkiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btntimkiemActionPerformed
-           voucher vFind = sr.findVoucherByID(txtten.getText());
-           if (vFind!=null) {
-               setModel(vFind);
-               FillTable(sr.getVoucherAll());
+        int fnh = sr.findNV(txttimkiem.getText());
+        if (fnh >= 0) {
+            tblbangvoucher.setRowSelectionInterval(fnh, fnh);
+            FillTable((List<voucher>) sr.getVoucherAll().get(fnh));
+        } else {
+            JOptionPane.showMessageDialog(this, "Không có");
         }
+
     }//GEN-LAST:event_btntimkiemActionPerformed
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
@@ -629,16 +780,8 @@ public class Vouchers extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jRadioButton2ActionPerformed
 
-    private void txtbatdauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtbatdauActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtbatdauActionPerformed
-
-    private void txtketthucActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtketthucActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtketthucActionPerformed
-
     private void txttimkiemKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txttimkiemKeyPressed
-        
+
     }//GEN-LAST:event_txttimkiemKeyPressed
 
     private void txttimkiemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txttimkiemKeyReleased
@@ -647,8 +790,9 @@ public class Vouchers extends javax.swing.JPanel {
 //          String sql = null;
 //          ResultSet rs = null;
 //          ArrayList<voucher>  arr= new ArrayList<>();
+//          arr.clear();
 //          try {
-//              sql = "Select * from dbo.Voucher where ten_voucher like N'%" + txttimkiem.getText()+ "%'";
+//              sql = "Select dbo.Voucher where ten_voucher like N'%" + txttimkiem.getText()+ "%'";
 //              
 //            cn = DBconnection.getConnection();
 //              System.out.println(sql);
@@ -670,6 +814,8 @@ public class Vouchers extends javax.swing.JPanel {
     private javax.swing.JButton btnthem;
     private javax.swing.JButton btntimkiem;
     private javax.swing.JButton btnxoa;
+    private com.toedter.calendar.JDateChooser datebatdau;
+    private com.toedter.calendar.JDateChooser dateketthuc;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -687,14 +833,14 @@ public class Vouchers extends javax.swing.JPanel {
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lbldongho;
     private javax.swing.JTable tblbangvoucher;
-    private javax.swing.JTextField txtbatdau;
     private javax.swing.JTextField txtgiatri;
-    private javax.swing.JTextField txtketthuc;
     private javax.swing.JTextField txtma;
     private javax.swing.JTextField txtsoluong;
     private javax.swing.JTextField txtten;
     private javax.swing.JTextField txttimkiem;
     private javax.swing.JTextField txttrangthai;
     // End of variables declaration//GEN-END:variables
+
 }

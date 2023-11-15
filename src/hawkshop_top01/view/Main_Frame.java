@@ -6,14 +6,14 @@ package hawkshop_top01.view;
 
 import javax.swing.JPanel;
 
-
-
 /**
  *
  * @author tuantq148
  */
 public class Main_Frame extends javax.swing.JFrame {
+
     private JPanel childJPanel;
+
     /**
      * Creates new form Main_Frame
      */
@@ -53,6 +53,7 @@ public class Main_Frame extends javax.swing.JFrame {
         user = new javax.swing.JLabel();
         vaitro = new javax.swing.JLabel();
         btnDangXuat = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         pnlThongKe3 = new javax.swing.JPanel();
         lblThongKe = new javax.swing.JLabel();
@@ -224,9 +225,11 @@ public class Main_Frame extends javax.swing.JFrame {
         pnlUser.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(242, 242, 242));
         jLabel1.setText("User    :");
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(242, 242, 242));
         jLabel2.setText("Vai trò :");
 
         user.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -251,6 +254,10 @@ public class Main_Frame extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(242, 242, 242));
+        jLabel3.setText("Amin");
+
         javax.swing.GroupLayout pnlUserLayout = new javax.swing.GroupLayout(pnlUser);
         pnlUser.setLayout(pnlUserLayout);
         pnlUserLayout.setHorizontalGroup(
@@ -262,9 +269,13 @@ public class Main_Frame extends javax.swing.JFrame {
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlUserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(vaitro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(pnlUserLayout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(vaitro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(user, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-            .addComponent(btnDangXuat, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnDangXuat, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
         );
         pnlUserLayout.setVerticalGroup(
             pnlUserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -276,8 +287,9 @@ public class Main_Frame extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(pnlUserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(vaitro, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(vaitro, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addGap(14, 14, 14)
                 .addComponent(btnDangXuat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -393,11 +405,11 @@ public class Main_Frame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDangXuatMouseEntered
 
     private void btnDangXuatMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDangXuatMouseExited
-        btnDangXuat.setBackground(new java.awt.Color(255,255,255));
+        btnDangXuat.setBackground(new java.awt.Color(255, 255, 255));
     }//GEN-LAST:event_btnDangXuatMouseExited
 
     private void btnDangXuatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangXuatActionPerformed
-        
+
     }//GEN-LAST:event_btnDangXuatActionPerformed
 
     private void lblSanPhamMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblSanPhamMouseClicked
@@ -429,13 +441,13 @@ public class Main_Frame extends javax.swing.JFrame {
         showPanel(new Vouchers());
     }//GEN-LAST:event_pnlHoaDonMouseClicked
 
-    private void showPanel(JPanel panel){
+    private void showPanel(JPanel panel) {
         childJPanel = panel;
         jPanel1.removeAll();
         jPanel1.add(childJPanel);
         jPanel1.validate();
     }
-    
+
     /**
      * @param args the command line arguments
      */
@@ -476,6 +488,7 @@ public class Main_Frame extends javax.swing.JFrame {
     private javax.swing.JButton btnDangXuat;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;

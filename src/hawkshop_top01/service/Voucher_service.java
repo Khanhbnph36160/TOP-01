@@ -8,6 +8,7 @@ package hawkshop_top01.service;
 import hawkshop_top01.entity.voucher;
 import hawkshop_top01.repository.DBconnection;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,13 +24,19 @@ public class Voucher_service {
     public ArrayList<voucher> getVoucherAll() {
         sql = "Select * from voucher";
         ArrayList<voucher> list = new ArrayList<>();
+        list.removeAll(list);
         try {
 
             cn = DBconnection.getConnection();
             ptm = cn.prepareStatement(sql);
             rs = ptm.executeQuery();
             while (rs.next()) {
-                voucher nv = new voucher(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7));
+                    Date ngay_bat_dau=rs.getDate(5);
+                    Date ngay_ket_thuc=rs.getDate(6);
+                    SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
+                    String ns=sdf.format(ngay_bat_dau);
+                    String ndk=sdf.format(ngay_ket_thuc);
+                voucher nv = new voucher(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getString(4), ns, ndk, rs.getString(7));
                 list.add(nv);
             }
             return list;
@@ -38,24 +45,24 @@ public class Voucher_service {
             return null;
         }
     }
-    public int AddVoucher(voucher s) {
-        sql = "INSERT INTO voucher(ten_voucher, soluong, giatri, ngay_bat_dau, ngay_ket_thuc,trangthai) VALUES(?,?,?,?,?,?)";
-        try {
-            cn = DBconnection.getConnection();
-            ptm = cn.prepareStatement(sql);
-                     
-            ptm.setString(1, s.getTen());
-            ptm.setInt(2, s.getSoLuong());
-            ptm.setString(3, s.getGiaTri());
-            ptm.setString(4,s.getNgayBatDau());
-            ptm.setString(5, s.getNgayKetThuc());
-            ptm.setString(6, s.getTrangThai());
-            return ptm.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
+//    public int AddVoucher(voucher s) {
+//        sql = "INSERT INTO voucher(ten_voucher, soluong, giatri, ngay_bat_dau, ngay_ket_thuc,trangthai) VALUES(?,?,?,?,?,?)";
+//        try {
+//            cn = DBconnection.getConnection();
+//            ptm = cn.prepareStatement(sql);
+//                     
+//            ptm.setString(1, s.getTen());
+//            ptm.setInt(2, s.getSoLuong());
+//            ptm.setString(3, s.getGiaTri());
+//            ptm.setString(4,s.getNgayBatDau());
+//            ptm.setString(5, s.getNgayKetThuc());
+//            ptm.setString(6, s.getTrangThai());
+//            return ptm.executeUpdate();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return 0;
+//        }
+//    }
     public int deteleUpdate(String id){
         sql = "delete dbo.Voucher Where id = ?";
         try {
@@ -91,19 +98,35 @@ public class Voucher_service {
         }
         return 0;
     }  
-    public voucher findVoucherByID(String ten){
-        List<voucher> list = new ArrayList<>();
-        for (voucher v : list) {
-            if (v.getTen().equalsIgnoreCase(ten)) {
-                return v;
-            }
+   public boolean selectByID(String ten) {
+       boolean aa = false;
+        try {
+             cn=DBconnection.getConnection();
+             ptm=cn.prepareStatement(ten);
+             rs=ptm.executeQuery("select ten_voucher from voucher where ten_voucher like '"+ten+"'");
+            while (rs.next()) {                
+                if(rs.getString(2).equals(ten)){                                  
+                aa =true;
+                break;
+                }else{
+                aa= false;
+                }
+            }          
+        } catch (Exception e) {
+            e.printStackTrace();
+//            return null;
         }
-        return null;
+        return aa;  
     }
-
-    public int deteleUpdate(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   public int findNV(String ten){
+    int a=0;
+    for (int i = 0; i < getVoucherAll().size(); i++) {
+        if (getVoucherAll().get(i).getTen().equalsIgnoreCase(ten)) {
+            a=i;
+            break;
+        }
     }
-   
+    return a;
+}
 
 }
