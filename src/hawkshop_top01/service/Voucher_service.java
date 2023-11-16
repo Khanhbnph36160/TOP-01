@@ -10,6 +10,7 @@ import hawkshop_top01.repository.DBconnection;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import static java.util.Collections.list;
 import java.util.List;
 
 /**
@@ -21,6 +22,7 @@ public class Voucher_service {
     PreparedStatement ptm = null;
     String sql = null;
     ResultSet rs = null;
+    ArrayList<voucher> list = new ArrayList<>();
     public ArrayList<voucher> getVoucherAll() {
         sql = "Select * from voucher";
         ArrayList<voucher> list = new ArrayList<>();
@@ -98,35 +100,61 @@ public class Voucher_service {
         }
         return 0;
     }  
-   public boolean selectByID(String ten) {
-       boolean aa = false;
-        try {
-             cn=DBconnection.getConnection();
-             ptm=cn.prepareStatement(ten);
-             rs=ptm.executeQuery("select ten_voucher from voucher where ten_voucher like '"+ten+"'");
-            while (rs.next()) {                
-                if(rs.getString(2).equals(ten)){                                  
-                aa =true;
-                break;
-                }else{
-                aa= false;
-                }
-            }          
-        } catch (Exception e) {
-            e.printStackTrace();
-//            return null;
+//   public boolean selectByID(String ten) {
+//       boolean aa = false;
+//        try {
+//             cn=DBconnection.getConnection();
+//             ptm=cn.prepareStatement(ten);
+//             rs=ptm.executeQuery("select ten_voucher from voucher where ten_voucher like '"+ten+"'");
+//            while (rs.next()) {                
+//                if(rs.getString(2).equals(ten)){                                  
+//                aa =true;
+//                break;
+//                }else{
+//                aa= false;
+//                }
+//            }          
+//        } catch (Exception e) {
+//            e.printStackTrace();
+////            return null;
+//        }
+//        return aa;  
+//    }
+//   public int findNV(String ten){
+//    int a=0;
+//    for (int i = 0; i < getVoucherAll().size(); i++) {
+//        if (getVoucherAll().get(i).getTen().equalsIgnoreCase(ten)) {
+//            a=i;
+//            break;
+//        }
+//    }
+//    return a;
+//}
+//   public ArrayList<voucher> timKiem(Integer ma) {
+//        ArrayList<voucher> listTimKiem = new ArrayList<>();
+//        for (voucher s : list) {
+//           if (ma.equals(s.getMa())) {
+//                listTimKiem.add(s);
+//            }
+//       }
+//        return listTimKiem;
+//    }
+    public ArrayList<voucher> findAllVoucherByName(String ten) throws SQLException{
+        sql = "select * from voucher where name ='"+ten+"'";
+        
+            Statement srm = cn.createStatement();
+            rs = srm.executeQuery(sql);
+            ArrayList<voucher> list = new ArrayList<>();
+            while (rs.next()) {            
+            voucher vou = new voucher();
+            vou.setMa(rs.getInt("id"));
+            vou.setTen(rs.getString("ten_voucher"));
+            vou.setSoLuong(rs.getInt("soLuong"));
+            vou.setGiaTri(rs.getString("giaTri"));
+            vou.setNgayBatDau(rs.getString("ngay_bat_dau"));
+            vou.setNgayKetThuc(rs.getString("ngay_ket_thuc"));
+            vou.setTrangThai(rs.getString("trangThai"));
         }
-        return aa;  
+        return list;     
     }
-   public int findNV(String ten){
-    int a=0;
-    for (int i = 0; i < getVoucherAll().size(); i++) {
-        if (getVoucherAll().get(i).getTen().equalsIgnoreCase(ten)) {
-            a=i;
-            break;
-        }
-    }
-    return a;
-}
-
 }
