@@ -45,8 +45,8 @@ public class ActionButton extends JButton{
 
     @Override
     protected void paintComponent(Graphics g) {
-        Graphics grap = (Graphics2D)g.create();
-        
+        Graphics2D grap = (Graphics2D)g.create();
+        grap.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         int Width = getWidth();
         int Height = getHeight();
         int size  = Math.min(Width, Height);
@@ -57,7 +57,7 @@ public class ActionButton extends JButton{
         }else {
             grap.setColor(new Color(199,199,199));
         }
-        
+        grap.fill(new Ellipse2D.Double(x, y, size, size));
         grap.dispose();
         super.paintComponent(g);
     }

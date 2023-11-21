@@ -6,28 +6,23 @@ package hawkshop_top01.view;
 
 import hawkshop_top01.images.TableActionCellRender;
 import hawkshop_top01.entity.voucher;
+import hawkshop_top01.images.TableAcitionEvent;
 import hawkshop_top01.images.TableActionCellEditer;
-import hawkshop_top01.images.XImage;
 import hawkshop_top01.repository.DBconnection;
 
 import hawkshop_top01.service.Voucher_service;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Color;
+import java.awt.Frame;
 import static java.awt.image.ImageObserver.WIDTH;
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.Period;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -37,26 +32,34 @@ import javax.swing.table.DefaultTableModel;
 public class Vouchers extends javax.swing.JPanel {
 
     Voucher_service sr = new Voucher_service();
-    List<voucher> list = new ArrayList<>();
-    
+    List<voucher> list = new ArrayList<>();    
     int row = -1;
-    DefaultTableModel model = new DefaultTableModel();
-    /**
-     * Creates new form Vouchers
-     */
-   
+    DefaultTableModel model = new DefaultTableModel();  
     public Vouchers() {
-        initComponents();
-        
+        initComponents();      
         model = (DefaultTableModel) tblbangvoucher.getModel();
         FillTable(sr.getVoucherAll());
-        tblbangvoucher.getColumnModel().getColumn(7).setCellRenderer(new TableActionCellRender());
-        tblbangvoucher.getColumnModel().getColumn(7).setCellEditor(new TableActionCellEditer());
-    }
-    
+        TableAcitionEvent event = new TableAcitionEvent() {
+            @Override
+            public void onEdit(int row) {
+                
+            }
 
-    private void FillTable(List<voucher> lists) {
+            @Override
+            public void onDelete(int row) {
+                if (tblbangvoucher.isEditing()) {
+                    tblbangvoucher.getCellEditor().stopCellEditing();
+                }
+                delete();
+                FillTable(sr.getVoucherAll());
+            }
+        };
+        tblbangvoucher.getColumnModel().getColumn(7).setCellRenderer(new TableActionCellRender());
+        tblbangvoucher.getColumnModel().getColumn(7).setCellEditor(new TableActionCellEditer(event));
         
+    }
+   
+    public void FillTable(List<voucher> lists) {       
         model.setRowCount(0);
         for (voucher s : lists) {
             model.addRow(new Object[]{
@@ -86,7 +89,7 @@ public class Vouchers extends javax.swing.JPanel {
 //        }
 //    }
 
-    private void showData() {
+    public void showData() {
         row = tblbangvoucher.getSelectedRow();
         if (row >= 0) {
             txtma.setText(tblbangvoucher.getValueAt(row, 0).toString());
@@ -97,7 +100,7 @@ public class Vouchers extends javax.swing.JPanel {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
                 SimpleDateFormat sdfs = new SimpleDateFormat("dd/MM/yyyy");
                 Date ngay_bat_dau = sdf.parse(tblbangvoucher.getValueAt(row, 4).toString());
-//                String ns = sdfs.format(ngay_bat_dau);
+
                 datebatdau.setDate(ngay_bat_dau);
                 Date ngay_ket_thuc = sdf.parse(tblbangvoucher.getValueAt(row, 5).toString());
                 String nss = sdfs.format(ngay_ket_thuc);
@@ -117,11 +120,13 @@ public class Vouchers extends javax.swing.JPanel {
             long hours = Datediff / (60*60*1000);
             long minutes = hours * 60;
             txttrangthai.setText(Long.toString(hours));
-            if (minutes>=0) {             
+                if (minutes >= 0) {                          
                txttrangthai.setText("Đang hoạt động");
-            }else{
+               
+            }else{              
                 txttrangthai.setText("Ngừng Hoạt Động");
-            }
+                
+            } 
        
         }
     }
@@ -196,29 +201,6 @@ public class Vouchers extends javax.swing.JPanel {
         return true;
     }
 
-//    public void addVoucher() {
-//        voucher s = Getmodel();
-//        if (sr.AddVoucher(s) > 0) {
-//            JOptionPane.showMessageDialog(this, "Thành công");
-//            clear();
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Không Thành công");
-//        }
-//    }
-//    public void UpdateVoucher() {
-//        row = tblbangvoucher.getSelectedRow();
-//        int id = Integer.valueOf(tblbangvoucher.getValueAt(row, 0).toString());
-//        voucher s = Getmodel();
-//        s.setMa(id);
-//        if (sr.UpdateVoucher(s) > 0) {
-//            JOptionPane.showMessageDialog(this, "Thành công");
-//            clear();
-//            FillTable(sr.getVoucherAll());
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Không Thành công");
-//        }
-//    }
-
     public void delete() {
         row = tblbangvoucher.getSelectedRow();
         String id = tblbangvoucher.getValueAt(row, 0).toString();
@@ -231,13 +213,6 @@ public class Vouchers extends javax.swing.JPanel {
     }
 
     public void setModel(voucher v) {
-//        txtma.setText(Integer.valueOf(v.getMa()).toString());
-//        txtten.setText(v.getTen());
-//        txtsoluong.setText(Integer.valueOf(v.getSoLuong()).toString());
-//        txtgiatri.setText(v.getGiaTri());
-//        txtbatdau.setText(v.getNgayBatDau());
-//        txtketthuc.setText(v.getNgayKetThuc());
-//        txttrangthai.setText(v.getTrangThai());
         try {
             txtma.setText(Integer.valueOf(v.getMa()).toString());
             txtten.setText(v.getTen());
@@ -282,10 +257,10 @@ public class Vouchers extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        txttrangthai = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         dateketthuc = new com.toedter.calendar.JDateChooser();
         datebatdau = new com.toedter.calendar.JDateChooser();
+        txttrangthai = new javax.swing.JTextField();
         btnxoa = new javax.swing.JButton();
         btnsua = new javax.swing.JButton();
         btnlammoi = new javax.swing.JButton();
@@ -293,7 +268,6 @@ public class Vouchers extends javax.swing.JPanel {
         btnthem = new javax.swing.JButton();
         txttimkiem = new javax.swing.JTextField();
         btntimkiem = new javax.swing.JButton();
-        lbldongho = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblbangvoucher = new javax.swing.JTable();
         jLabel11 = new javax.swing.JLabel();
@@ -384,12 +358,12 @@ public class Vouchers extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtten)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtten, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtsoluong, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtgiatri, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -407,13 +381,6 @@ public class Vouchers extends javax.swing.JPanel {
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Trạng thái");
 
-        txttrangthai.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
-        txttrangthai.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txttrangthaiActionPerformed(evt);
-            }
-        });
-
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(0, 0, 255));
         jLabel10.setText("Thời Gian Sửa dụng");
@@ -421,6 +388,11 @@ public class Vouchers extends javax.swing.JPanel {
         dateketthuc.setDateFormatString("yyyy-MM-dd");
 
         datebatdau.setDateFormatString("yyyy-MM-dd");
+
+        txttrangthai.setEditable(false);
+        txttrangthai.setBackground(new java.awt.Color(204, 204, 204));
+        txttrangthai.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        txttrangthai.setForeground(new java.awt.Color(255, 0, 0));
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -431,14 +403,14 @@ public class Vouchers extends javax.swing.JPanel {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txttrangthai)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel10)
                             .addComponent(datebatdau, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(dateketthuc, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(dateketthuc, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txttrangthai, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 19, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -457,8 +429,8 @@ public class Vouchers extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txttrangthai, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
-                .addGap(12, 12, 12))
+                .addComponent(txttrangthai, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         btnxoa.setBackground(new java.awt.Color(255, 255, 0));
@@ -486,6 +458,7 @@ public class Vouchers extends javax.swing.JPanel {
         btnlammoi.setBackground(new java.awt.Color(255, 255, 0));
         btnlammoi.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnlammoi.setForeground(new java.awt.Color(51, 102, 255));
+        btnlammoi.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hawkshop_top01/images/icons/Refresh.png"))); // NOI18N
         btnlammoi.setText("Làm mới");
         btnlammoi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -496,6 +469,7 @@ public class Vouchers extends javax.swing.JPanel {
         jButton1.setBackground(new java.awt.Color(255, 255, 0));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(0, 102, 255));
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hawkshop_top01/images/icons/Zoom.png"))); // NOI18N
         jButton1.setText("Check Hạn");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -526,16 +500,18 @@ public class Vouchers extends javax.swing.JPanel {
         btntimkiem.setBackground(new java.awt.Color(255, 255, 0));
         btntimkiem.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btntimkiem.setForeground(new java.awt.Color(0, 51, 255));
+        btntimkiem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hawkshop_top01/images/icons/tim.png"))); // NOI18N
         btntimkiem.setText("Search");
+        btntimkiem.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btntimkiemMouseClicked(evt);
+            }
+        });
         btntimkiem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btntimkiemActionPerformed(evt);
             }
         });
-
-        lbldongho.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lbldongho.setForeground(new java.awt.Color(0, 0, 204));
-        lbldongho.setText("00:00");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -544,9 +520,9 @@ public class Vouchers extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
+                        .addGap(25, 25, 25)
                         .addComponent(txttimkiem, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(btntimkiem))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(24, 24, 24)
@@ -554,12 +530,10 @@ public class Vouchers extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnlammoi, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(68, 68, 68)
+                        .addComponent(btnlammoi)
+                        .addGap(45, 45, 45)
                         .addComponent(jButton1)
-                        .addGap(18, 18, 18)
-                        .addComponent(lbldongho)
-                        .addContainerGap())
+                        .addGap(70, 70, 70))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(36, 36, 36)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -568,7 +542,7 @@ public class Vouchers extends javax.swing.JPanel {
                                 .addComponent(btnthem, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(58, 58, 58)
                                 .addComponent(btnsua, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnxoa, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -588,8 +562,7 @@ public class Vouchers extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnlammoi, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lbldongho))
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnthem, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -608,7 +581,15 @@ public class Vouchers extends javax.swing.JPanel {
             new String [] {
                 "Mã voucher", "Tên voucher", "Số lượng", "Giá trị", "Ngày bắt đầu", "Ngày kết thúc", "Trạng Thái", "Action"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                true, false, false, false, false, false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tblbangvoucher.setRowHeight(35);
         tblbangvoucher.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -625,34 +606,30 @@ public class Vouchers extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 836, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel11)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                        .addComponent(jLabel11)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addGap(40, 40, 40))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -671,10 +648,6 @@ public class Vouchers extends javax.swing.JPanel {
     private void txtmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtmaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtmaActionPerformed
-
-    private void txttrangthaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txttrangthaiActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txttrangthaiActionPerformed
 
     private void btnxoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnxoaActionPerformed
         delete();
@@ -709,10 +682,10 @@ public class Vouchers extends javax.swing.JPanel {
                 ptm.setObject(7, id);
                 int chk = ptm.executeUpdate();
                 if (chk > 0) {
-                    JOptionPane.showMessageDialog(this, "Thêm Thành Công");
+                    JOptionPane.showMessageDialog(this, "Sửa Thành Công");
                     FillTable(sr.getVoucherAll());
                 }else{
-                     JOptionPane.showMessageDialog(this, " Không Thành Công");
+                     JOptionPane.showMessageDialog(this, "Sửa Không Thành Công");
                 }
                         
             } catch (Exception e) {
@@ -751,7 +724,7 @@ public class Vouchers extends javax.swing.JPanel {
                     JOptionPane.showMessageDialog(this, "Thêm Thành Công");
                     FillTable(sr.getVoucherAll());
                 }else{
-                     JOptionPane.showMessageDialog(this, " Không Thành Công");
+                     JOptionPane.showMessageDialog(this, "Sửa Không Thành Công");
                 }
                         
             } catch (Exception e) {
@@ -767,6 +740,8 @@ public class Vouchers extends javax.swing.JPanel {
 
     private void tblbangvoucherMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbangvoucherMouseClicked
         showData();
+        
+        
     }//GEN-LAST:event_tblbangvoucherMouseClicked
 
     private void btntimkiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btntimkiemActionPerformed
@@ -780,8 +755,10 @@ public class Vouchers extends javax.swing.JPanel {
 //          Integer ma = Integer.valueOf(txttimkiem.getText());
 //          ArrayList<voucher> checkTim = sr.timKiem(ma);
 //          FillTable(checkTim);
-         
-          
+        String ten = txttimkiem.getText();
+        ArrayList<voucher> list = sr.TimKiem(ten);
+        FillTable(list);
+        System.out.println(list);
           
 
     }//GEN-LAST:event_btntimkiemActionPerformed
@@ -841,12 +818,16 @@ public class Vouchers extends javax.swing.JPanel {
             long hours = Datediff / (60*60*1000);
             long minutes = hours * 60;
             txttrangthai.setText(Long.toString(hours));
-            if (minutes>=0) {             
+              if (minutes >= 0) {                          
                txttrangthai.setText("Đang hoạt động");
-            }else{
+            }else{              
                 txttrangthai.setText("Ngừng Hoạt Động");
-            }
+                           }         
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btntimkiemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btntimkiemMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btntimkiemMouseClicked
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -875,7 +856,6 @@ public class Vouchers extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel lbldongho;
     private javax.swing.JTable tblbangvoucher;
     private javax.swing.JTextField txtgiatri;
     private javax.swing.JTextField txtma;

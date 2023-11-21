@@ -140,7 +140,7 @@ public class Voucher_service {
 //        return listTimKiem;
 //    }
     public ArrayList<voucher> findAllVoucherByName(String ten) throws SQLException{
-        sql = "select * from voucher where name ='"+ten+"'";
+        sql = "select * from voucher where ten_voucher like ='"+ten+"'";
         
             Statement srm = cn.createStatement();
             rs = srm.executeQuery(sql);
@@ -156,5 +156,30 @@ public class Voucher_service {
             vou.setTrangThai(rs.getString("trangThai"));
         }
         return list;     
+    }
+      public ArrayList<voucher> TimKiem(String ten) {
+        sql = "select * from voucher where ten_voucher like '"+ten+"'";
+        ArrayList<voucher> list = new ArrayList<>();
+        
+        try {
+
+            cn = DBconnection.getConnection();
+            ptm = cn.prepareStatement(sql);
+            rs = ptm.executeQuery();
+            while (rs.next()) {
+                    Date ngay_bat_dau=rs.getDate(5);
+                    Date ngay_ket_thuc=rs.getDate(6);
+                    SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
+                    String ns=sdf.format(ngay_bat_dau);
+                    String ndk=sdf.format(ngay_ket_thuc);
+                voucher nv = new voucher(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getString(4), ns, ndk, rs.getString(7));
+                list.add(nv);
+            }
+            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+           
+        }
+        return list;
     }
 }

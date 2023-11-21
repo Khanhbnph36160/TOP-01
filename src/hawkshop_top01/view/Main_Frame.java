@@ -14,7 +14,7 @@ public class Main_Frame extends javax.swing.JFrame {
 
     private JPanel childJPanel;
 
-    /**
+    /**00
      * Creates new form Main_Frame
      */
     public Main_Frame() {

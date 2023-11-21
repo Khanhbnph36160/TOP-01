@@ -9,23 +9,24 @@ import java.awt.Component;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 
+   
 /**
  *
  * @author khuat
  */
+  
 public class TableActionCellEditer extends DefaultCellEditor{
 
-    public TableActionCellEditer() {
+    private TableAcitionEvent event;
+    public TableActionCellEditer(TableAcitionEvent event) {
         super(new JCheckBox());
+        this.event = event;
     }
-
-    
-
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
        Action_voucher acition = new Action_voucher();
+       acition.initEvent(event, row);
        acition.setBackground(table.getSelectionBackground());
        return acition;
         

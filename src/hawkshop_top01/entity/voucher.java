@@ -9,10 +9,6 @@ package hawkshop_top01.entity;
  * @author khuat
  */
 public class voucher {
-
-    public static void applyPattern(String ddmmyyyy) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
     private int ma;
     private String ten;
     private int soLuong;
@@ -34,10 +30,10 @@ public class voucher {
         this.trangThai = trangThai;
     }
 
-    public voucher(int WIDTH, String text, int parseInt, String text0, String text1, String bd, String kt, String batdau, String ketthuc) {
+    public voucher(int WIDTH, String text, int parseInt, String text0, String bd, String kt, String text1, String batdau, String ketthuc) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
+    
     public int getMa() {
         return ma;
     }
@@ -93,5 +89,12 @@ public class voucher {
     public void setTrangThai(String trangThai) {
         this.trangThai = trangThai;
     }
+
+    @Override
+    public String toString() {
+        return "voucher{" + "ma=" + ma + ", ten=" + ten + ", soLuong=" + soLuong + ", giaTri=" + giaTri + ", ngayBatDau=" + ngayBatDau + ", ngayKetThuc=" + ngayKetThuc + ", trangThai=" + trangThai + '}';
+    }
+    
+    
     
 }
